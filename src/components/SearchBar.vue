@@ -1,5 +1,5 @@
 <template>
-  <div class="input-group mb-3">
+  <div class="input-group mb-3 w-100">
     <select name="species" id="species" v-model="inputText" @change="changeSearch">
         <option value="">all</option>
         <option :value="specie" v-for="(specie,index) in characterSpecies" :key="index">{{specie}}</option>
@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import store from '../store.js'
 export default {
     name:'SearchBar',
     data(){
@@ -19,16 +20,18 @@ export default {
             inputText:'',
         }
     },
-    props:['characterSpecies'],
-
+    computed:{
+        characterSpecies(){
+            return store.state.speciesList 
+        }
+    },
     methods:{
         changeSearch(){
-            this.$emit('performSearch', this.inputText);
-            this.inputText=''
+            store.setText(this.inputText);
         },
         reset(){
-            this.inputText =''
-            this.$emit('search', this.inputText)
+            this.inputText=''
+            store.setText(this.inputText);
         }
     }
 }

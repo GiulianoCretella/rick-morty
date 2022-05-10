@@ -1,9 +1,6 @@
 <template>
 <section class="container">
     <div class="row">
-        <div class="col-12">
-            <search-bar @performSearch="setSearchText($event)" :characterSpecies="species"/>
-        </div>
         <div class="col-6 col-md-4 col-lg-3 gy-0" v-for="character in filteredList" :key="character.id" >
         <card-component :item="character"/>
         </div>
@@ -19,34 +16,30 @@
 </template>
 
 <script>
+import store from '../store.js';
 import axios from 'axios';
 import LoaderComponent from './LoaderComponent.vue'
 import CardComponent from './CardComponent.vue';
 import FooterComponent from './FooterComponent.vue';
-import SearchBar from './SearchBar.vue';
 export default {
     name:'MainGrid',
     components:{
         LoaderComponent,
         CardComponent,
         FooterComponent,
-        SearchBar,
     },
     data(){
         return{
             apiPath:'https://api.sampleapis.com/rickandmorty/',
             characterList:[],
             loading:false,
-            searchText:'',
             species:[]
         }
     },
-    methods:{
-        setSearchText(text){
-            this.searchText = text;
-        }
-    },
     computed:{
+        searchText(){
+            return store.state.searchText;
+        },
         filteredList(){
             if(this.searchText === ''){
                 return this.characterList
@@ -64,7 +57,8 @@ export default {
                 if(!this.species.includes(el.species)){
                     this.species.push(el.species)
                 }
-            })
+            });
+            store.setSpecies(this.species);
             this.loading = false;
             console.log(this.characterList)
         }).catch((error)=>{
